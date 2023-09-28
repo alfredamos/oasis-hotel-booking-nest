@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id           String   @id @default(uuid())
+  checkIn      DateTime
+  checkOut     DateTime
+  numNights    Int
+  numGuests    Int
+  cabinPrice   Decimal
+  extraPrice   Decimal
+  totalPrice   Decimal
+  status       Status   @default(UnConfirmed)
+  hasBreakfast Boolean
+  isPaid       Boolean
+  observations String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  cabinId String @unique
+  cabin   Cabin  @relation(fields: [cabinId], references: [id])
+
+  dateCreated DateTime @default(now())
+
+  @@map("bookings")
+}
+
+model Cabin {
+  id           String  @id @default(uuid())
+  name         String  @db.VarChar(255)
+  maxCapacity  Int
+  regularPrice Decimal
+  discount     Decimal
+  description  String?
+  image        String?
+
+  dateCreated DateTime @default(now())
+  booking     Booking?
+
+  @@map("cabins")
+}
+
+model Setting {
+  id               String  @id @default(uuid())
+  minBookingLength Int
+  maxBookingLength Int
+  guestsPerBooking Int
+  breakfastPrice   Decimal
+
+  @@map("settings")
+}
+
+model User {
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(255)
+  email       String  @unique @db.VarChar(255)
+  phone       String  @db.VarChar(255)
+  password    String  @db.VarChar(255)
+  nationality String? @db.VarChar(255)
+  countryFlag String? @db.VarChar(255)
+  nationalId  String? @db.VarChar(255)
+  gender      Gender  @default(Male)
+  role        Role    @default(Guest)
+
+  booking     Booking?
+  dateCreated DateTime @default(now())
+
+  @@map("users")
+}
+
+enum Gender {
+  Female
+  Male
+}
+
+enum Role {
+  Admin
+  Guest
+  Staff
+}
+
+enum Status {
+  Cancelled
+  CheckedIn
+  CheckedOut
+  Confirmed
+  UnConfirmed
+}
