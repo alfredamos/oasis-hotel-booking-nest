@@ -6,26 +6,39 @@ import { LoginDto } from './dto/login.dto';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { ChangeUserRoleDto } from './dto/changeUserRole.dto';
 import { UserInfo } from 'src/models/userInfoModel';
+import { SignupDto } from './dto/signup.dto';
+import { IsPublic } from 'src/decorators/is-public.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Patch()
+  @Roles('Admin', 'Guest', 'Staff')
+  @Patch('change-password')
   changePassword(@Body() changePasswordDto: ChangePasswordDto) {
     return this.authService.changePassword(changePasswordDto);
   }
 
-  @Patch()
+  @Roles('Admin', 'Guest', 'Staff')
+  @Patch('edit-profile')
   editProfile(@Body() editProfileDto: EditProfileDto) {
     return this.authService.editProfile(editProfileDto);
   }
 
-  @Post()
+  @IsPublic()
+  @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
+  @IsPublic()
+  @Post('signup')
+  signup(@Body() signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
+  }
+
+  @Roles('Admin')
   @Patch('change-role')
   updateUserRole(
     @Body() roleChangeDto: ChangeUserRoleDto,

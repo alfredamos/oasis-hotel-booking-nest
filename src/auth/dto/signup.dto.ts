@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Gender } from '@prisma/client';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Gender, Role } from '@prisma/client';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 /* eslint-disable prettier/prettier */
 export class SignupDto {
   @IsNotEmpty()
@@ -21,4 +21,7 @@ export class SignupDto {
   confirmPassword: string;
   @IsEnum(Gender)
   gender: Gender;
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }

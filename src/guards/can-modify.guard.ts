@@ -29,16 +29,16 @@ export class CanModifyGuard implements CanActivate {
 
     //----> Get the authorization request object.
     const request = context.switchToHttp().getRequest();
-    const { id } = request.params; //----> Get the order id request to modify.
+    const { id } = request.params; //----> Get the booking id request to modify.
 
-    //----> Get the order request from database.
-    const order = await this.prisma.order.findUnique({
+    //----> Get the booking request from database.
+    const booking = await this.prisma.booking.findUnique({
       where: { id },
     });
 
-    //----> Check for existence of order request.
-    if (!order) {
-      throw new NotFoundException('order request does not exist');
+    //----> Check for existence of booking request.
+    if (!booking) {
+      throw new NotFoundException('booking request does not exist');
     }
 
     //----> get the user information
@@ -52,13 +52,13 @@ export class CanModifyGuard implements CanActivate {
     //----> Get the user id from user authorization payload.
     const userIdFromAuthPayload = user.id;
 
-    //----> Get the user id from order request.
-    const userIfFromOrderRequest = order.userId;
+    //----> Get the user id from booking request.
+    const userIfFromBookingRequest = booking.userId;
 
-    //----> Check for the equality of user id from order request and the one from auth payload.
+    //----> Check for the equality of user id from booking request and the one from auth payload.
     const isSameUser = UuidTool.compare(
       userIdFromAuthPayload,
-      userIfFromOrderRequest,
+      userIfFromBookingRequest,
     );
 
     //----> Check if the user is an admin.
